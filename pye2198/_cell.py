@@ -96,14 +96,14 @@ class Cell:
             ax.set_xticks([])
             ax.set_yticks([])
             
-    def find_paths_connect_to_soma(self):
+    def find_paths_connect_to_soma(self, scale_factors=[1, 1.5, 2, 2.5, 3]):
 
         df = self.df_paths
         soma = self.coord[0]
 
         candidates = []
         print('Potential paths connected to soma:\n')
-        for counter, scale_factor in enumerate([1, 1.5, 2, 2.5, 3]):
+        for counter, scale_factor in enumerate(scale_factors):
 
             a = df['path'].apply(lambda x: distance_between_two_points(x[0], soma)) # one end
             b = df['path'].apply(lambda x: distance_between_two_points(x[-1], soma)) # the other end
