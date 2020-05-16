@@ -1,0 +1,12 @@
+# cache
+
+.cache
+.cache/*
+
+*__pycache__*
+*.ipynb_checkpoints/
+
+# others
+
+*.egg-info/
+notebooks/dev*
