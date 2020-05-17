@@ -34,9 +34,9 @@ class Cell:
 
         self.G = G
         
-    def get_paths(self):
+    def get_paths(self, downscale_factor=10):
         
-        self.df_paths = _get_paths(self.G, self.terminal_coord, self.branch_coord, self.coord, self.radii, self.coord_types)        
+        self.df_paths = _get_paths(self.G, self.terminal_coord, self.branch_coord, self.coord, self.radii, self.coord_types, downscale_factor=downscale_factor)        
         
     def plot_morph(self, zoom=False, highlight=[]):
 
@@ -295,7 +295,15 @@ class Cell:
         self.df_paths['radius'] = self.df_paths['nodes_downsampled'].apply(lambda x: self.radii[x])
         self.df_paths['types'] = self.df_paths['nodes_downsampled'].apply(lambda x: self.coord_types[x])
 
-    def export_swc(self, save_to='../output/'):
+    def export_pickle(self, save_to='../output/pickle/'):
+        with open(save_to + f'Cell_{self.filename}.pickle', 'wb') as f:
+            pickle.dump(self.df_paths, f)
+        
+    def load_pickle(self, load_from='../output/pickle/'):
+        with open(load_from + f'Cell_{self.filename}.pickle', 'rb') as f:
+            self.df_paths = pickle.load(f)
+     
+    def export_swc(self, save_to='../output/swc/'):
 
         df_paths = self.df_paths
         
@@ -488,7 +496,7 @@ def get_res(G, tn, bn, p, r, t):
 
     return res
 
-def _get_paths(G, tn, bn, p, r, t):
+def _get_paths(G, tn, bn, p, r, t, downscale_factor=10):
 
     """
     return a pandas DataFrame with two columns
@@ -520,7 +528,7 @@ def _get_paths(G, tn, bn, p, r, t):
 
     df = pd.DataFrame()
     df['nodes'] = pd.Series(all_paths_idx)
-    df['nodes_downsampled'] = df.nodes.apply(lambda x: downsample(x, 10))
+    df['nodes_downsampled'] = df.nodes.apply(lambda x: downsample(x, downscale_factor))
     df['path'] = df['nodes_downsampled'].apply(lambda x: p[x])
     
     return df
